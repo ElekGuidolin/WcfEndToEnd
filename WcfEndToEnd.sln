@@ -3,7 +3,43 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26403.7
 MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GeoLib.Core", "GeoLib.Core\GeoLib.Core.csproj", "{461922D9-747F-4BB0-AC2E-4737139EEDB6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GeoLib.Data", "GeoLib.Data\GeoLib.Data.csproj", "{DB2CA02F-5D34-4734-8A44-634BFD381244}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GeoLib.Tests", "GeoLib.Tests\GeoLib.Tests.csproj", "{491D2A96-90E7-4D2E-82A6-18786B9890D6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GeoLib.Contracts", "GeoLib.Contracts\GeoLib.Contracts.csproj", "{E9F4272D-EF18-422F-B158-D848D6096CD7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GeoLib.Services", "GeoLib.Services\GeoLib.Services.csproj", "{B7107762-4009-4240-BE37-C1D2F8A07B24}"
+EndProject
 Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{461922D9-747F-4BB0-AC2E-4737139EEDB6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{461922D9-747F-4BB0-AC2E-4737139EEDB6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{461922D9-747F-4BB0-AC2E-4737139EEDB6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{461922D9-747F-4BB0-AC2E-4737139EEDB6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DB2CA02F-5D34-4734-8A44-634BFD381244}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DB2CA02F-5D34-4734-8A44-634BFD381244}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DB2CA02F-5D34-4734-8A44-634BFD381244}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DB2CA02F-5D34-4734-8A44-634BFD381244}.Release|Any CPU.Build.0 = Release|Any CPU
+		{491D2A96-90E7-4D2E-82A6-18786B9890D6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{491D2A96-90E7-4D2E-82A6-18786B9890D6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{491D2A96-90E7-4D2E-82A6-18786B9890D6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{491D2A96-90E7-4D2E-82A6-18786B9890D6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E9F4272D-EF18-422F-B158-D848D6096CD7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E9F4272D-EF18-422F-B158-D848D6096CD7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E9F4272D-EF18-422F-B158-D848D6096CD7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E9F4272D-EF18-422F-B158-D848D6096CD7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B7107762-4009-4240-BE37-C1D2F8A07B24}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B7107762-4009-4240-BE37-C1D2F8A07B24}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B7107762-4009-4240-BE37-C1D2F8A07B24}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B7107762-4009-4240-BE37-C1D2F8A07B24}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection

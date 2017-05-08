@@ -17,6 +17,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Hosting", "Hosting", "{5A00
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GeoLib.ConsoleHost", "GeoLib.ConsoleHost\GeoLib.ConsoleHost.csproj", "{5668CCD5-96B6-4F5D-81C3-055E2BFD6535}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GeoLib.WebHost", "GeoLib.WebHost\GeoLib.WebHost.csproj", "{FA09D21D-956B-4EEB-A25A-467F9FA234F1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GeoLib.WebHost.Tests", "GeoLib.WebHost.Tests\GeoLib.WebHost.Tests.csproj", "{B8917C57-7639-48DF-B926-B5738FBA5AFD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GeoLib.WindowsHost", "GeoLib.WindowsHost\GeoLib.WindowsHost.csproj", "{1977E646-49E1-4949-B2F9-A8CD7FF17C85}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -47,11 +53,25 @@ Global
 		{5668CCD5-96B6-4F5D-81C3-055E2BFD6535}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5668CCD5-96B6-4F5D-81C3-055E2BFD6535}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5668CCD5-96B6-4F5D-81C3-055E2BFD6535}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FA09D21D-956B-4EEB-A25A-467F9FA234F1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FA09D21D-956B-4EEB-A25A-467F9FA234F1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FA09D21D-956B-4EEB-A25A-467F9FA234F1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FA09D21D-956B-4EEB-A25A-467F9FA234F1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B8917C57-7639-48DF-B926-B5738FBA5AFD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B8917C57-7639-48DF-B926-B5738FBA5AFD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B8917C57-7639-48DF-B926-B5738FBA5AFD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B8917C57-7639-48DF-B926-B5738FBA5AFD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1977E646-49E1-4949-B2F9-A8CD7FF17C85}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1977E646-49E1-4949-B2F9-A8CD7FF17C85}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1977E646-49E1-4949-B2F9-A8CD7FF17C85}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1977E646-49E1-4949-B2F9-A8CD7FF17C85}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{5668CCD5-96B6-4F5D-81C3-055E2BFD6535} = {5A006E3E-3B02-4B58-BD22-5EE3A3C0D5F3}
+		{FA09D21D-956B-4EEB-A25A-467F9FA234F1} = {5A006E3E-3B02-4B58-BD22-5EE3A3C0D5F3}
+		{1977E646-49E1-4949-B2F9-A8CD7FF17C85} = {5A006E3E-3B02-4B58-BD22-5EE3A3C0D5F3}
 	EndGlobalSection
 EndGlobal

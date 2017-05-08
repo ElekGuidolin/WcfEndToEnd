@@ -12,12 +12,16 @@ namespace GeoLib.ConsoleHost
 		{
 			ServiceHost hostGeoManager = new ServiceHost(typeof(GeoManager));
 
-			//Configuring programatically and comment to the App.config. Uncomment there, comment here for no errors.
-			string address = "net.tcp://localhost:8009/GeoService";
-			Binding binding = new NetTcpBinding();
-			Type contract = typeof(IGeoService);
+			#region Programatically Configuration (Commented)
 
-			hostGeoManager.AddServiceEndpoint(contract, binding, address);
+			//Configuring programatically and comment to the App.config. Uncomment there, comment here for no errors.
+			//string address = "net.tcp://localhost:8009/GeoService";
+			//Binding binding = new NetTcpBinding();
+			//Type contract = typeof(IGeoService);
+
+			//hostGeoManager.AddServiceEndpoint(contract, binding, address);
+
+			#endregion
 
 			hostGeoManager.Open();
 

@@ -1,0 +1,34 @@
+﻿<Window x:Class="GeoLib.Client.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:GeoLib.Client"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="381.144" Width="632.521">
+	<Grid>
+		<Label x:Name="lblZip" Content="Zip Code" HorizontalAlignment="Left" Margin="10,21,0,0" VerticalAlignment="Top" Width="64"/>
+		<TextBox x:Name="txtZipSearch" HorizontalAlignment="Left" Height="23" Margin="79,23,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
+		<Label x:Name="lblState" Content="State" HorizontalAlignment="Left" Margin="343,21,0,0" VerticalAlignment="Top" Width="49"/>
+		<TextBox x:Name="txtSearchState" HorizontalAlignment="Left" Height="23" Margin="392,23,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="130"/>
+		<Button x:Name="btnGetInfo" Content="Get Info" HorizontalAlignment="Left" Margin="79,51,0,0" VerticalAlignment="Top" Width="120" Click="btnGetInfo_Click"/>
+		<Button x:Name="btnGetZipCodes" Content="Get Zip Codes" HorizontalAlignment="Left" Margin="392,51,0,0" VerticalAlignment="Top" Width="130" Click="btnGetZipCodes_Click"/>
+		<Label x:Name="lblResponseCity" Content="City" HorizontalAlignment="Left" Margin="10,89,0,0" VerticalAlignment="Top" Width="189"/>
+		<Label x:Name="lblResponseState" Content="State" HorizontalAlignment="Left" Margin="10,120,0,0" VerticalAlignment="Top" Width="189"/>
+		<Label x:Name="lblTextToShow" Content="Text to Show:" HorizontalAlignment="Left" Margin="10,194,0,0" VerticalAlignment="Top" Width="99"/>
+		<TextBox x:Name="txtTextToShow" HorizontalAlignment="Left" Height="23" Margin="10,220,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="258"/>
+		<Button x:Name="btnMakeCall" Content="Make Call" HorizontalAlignment="Left" Margin="169,248,0,0" VerticalAlignment="Top" Width="99" Click="btnMakeCall_Click"/>
+		<ListBox x:Name="lstZips" HorizontalAlignment="Left" Height="171" Margin="392,99,0,0" VerticalAlignment="Top" Width="199">
+			<ListBox.ItemTemplate>
+				<DataTemplate>
+					<StackPanel Orientation="Horizontal">
+						<TextBlock Text="{Binding ZipCode}" />
+						<TextBlock Text=" - " />
+						<TextBlock Text="{Binding City}" />
+					</StackPanel>
+				</DataTemplate>
+			</ListBox.ItemTemplate>
+		</ListBox>
+
+	</Grid>
+</Window>

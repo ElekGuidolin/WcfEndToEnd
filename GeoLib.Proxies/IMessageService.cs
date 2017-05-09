@@ -7,10 +7,10 @@ using System.Threading.Tasks;
 
 namespace GeoLib.Client.Contracts
 {
-	[ServiceContract(Namespace = "http://smartdev.com.br/ElekGuidolin/WcfEndToEnd")]
+	[ServiceContract]
 	public interface IMessageService
 	{
-		[OperationContract]
-		void ShowMessage(string message);
+		[OperationContract(Name = "ShowMessage")]
+		void ShowMsg(string message);
 	}
 }

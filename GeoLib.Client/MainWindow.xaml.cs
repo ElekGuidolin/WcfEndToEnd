@@ -59,7 +59,7 @@ namespace GeoLib.Client
 			ChannelFactory<IMessageService> factory = new ChannelFactory<IMessageService>("");
 			IMessageService proxy = factory.CreateChannel();
 
-			proxy.ShowMessage(txtTextToShow.Text);
+			proxy.ShowMsg(txtTextToShow.Text);
 
 			factory.Close();
 		}

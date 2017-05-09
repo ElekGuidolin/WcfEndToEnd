@@ -11,7 +11,7 @@ namespace GeoLib.WindowsHost.Services
 	{
 		public void ShowMessage(string message)
 		{
-			
+            MainWindow.MainUI.ShowMessage(message);
 		}
 	}
 }

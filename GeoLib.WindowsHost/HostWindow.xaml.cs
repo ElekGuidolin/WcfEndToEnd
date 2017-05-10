@@ -9,13 +9,16 @@ using System.Windows;
 namespace GeoLib.WindowsHost
 {
 	/// <summary>
-	/// Interaction logic for MainWindow.xaml
+	/// Interaction logic for HostWindow.xaml
 	/// </summary>
-	public partial class MainWindow : Window
+	public partial class HostWindow : Window
 	{
-		public static MainWindow MainUI { get; set; }
+		public static HostWindow MainUI { get; set; }
 
-		public MainWindow()
+		ServiceHost _hostGeoManager = null;
+		ServiceHost _hostMessageManager = null;
+
+		public HostWindow()
 		{
 			InitializeComponent();
 
@@ -26,9 +29,6 @@ namespace GeoLib.WindowsHost
 
 			Title = "UI Running on Thread" + Thread.CurrentThread.ManagedThreadId;
 		}
-
-		ServiceHost _hostGeoManager = null;
-		ServiceHost _hostMessageManager = null;
 
 		private void btnStart_Click(object sender, RoutedEventArgs e)
 		{

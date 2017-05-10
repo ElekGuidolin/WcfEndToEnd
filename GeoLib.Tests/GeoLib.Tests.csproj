@@ -74,7 +74,7 @@
       <Name>GeoLib.Data</Name>
     </ProjectReference>
     <ProjectReference Include="..\GeoLib.Services\GeoLib.Services.csproj">
-      <Project>{B7107762-4009-4240-BE37-C1D2F8A07B24}</Project>
+      <Project>{b7107762-4009-4240-be37-c1d2f8a07b24}</Project>
       <Name>GeoLib.Services</Name>
     </ProjectReference>
   </ItemGroup>

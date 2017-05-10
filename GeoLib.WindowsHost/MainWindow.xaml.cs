@@ -1,20 +1,10 @@
 ﻿using GeoLib.Services;
+using GeoLib.WindowsHost.Services;
 using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.Diagnostics;
 using System.ServiceModel;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace GeoLib.WindowsHost
 {
@@ -23,6 +13,8 @@ namespace GeoLib.WindowsHost
 	/// </summary>
 	public partial class MainWindow : Window
 	{
+		public static MainWindow MainUI { get; set; }
+
 		public MainWindow()
 		{
 			InitializeComponent();
@@ -30,15 +22,21 @@ namespace GeoLib.WindowsHost
 			btnStart.IsEnabled = true;
 			btnStop.IsEnabled = false;
 
-			this.Title = "UI Running on Thread" + Thread.CurrentThread.ManagedThreadId;
+			MainUI = this;
+
+			Title = "UI Running on Thread" + Thread.CurrentThread.ManagedThreadId;
 		}
 
 		ServiceHost _hostGeoManager = null;
+		ServiceHost _hostMessageManager = null;
 
 		private void btnStart_Click(object sender, RoutedEventArgs e)
 		{
 			_hostGeoManager = new ServiceHost(typeof(GeoManager));
+			_hostMessageManager = new ServiceHost(typeof(MessageManager));
+
 			_hostGeoManager.Open();
+			_hostMessageManager.Open();
 
 			btnStart.IsEnabled = false;
 			btnStop.IsEnabled = true;
@@ -47,9 +45,18 @@ namespace GeoLib.WindowsHost
 		private void btnStop_Click(object sender, RoutedEventArgs e)
 		{
 			_hostGeoManager.Close();
+			_hostMessageManager.Close();
 
 			btnStart.IsEnabled = true;
 			btnStop.IsEnabled = false;
+		}
+
+		public void ShowMessage(string message)
+		{
+			int threadId = Thread.CurrentThread.ManagedThreadId;
+
+			lblMessage.Content = message + Environment.NewLine +
+				"(Shown on thread " + Thread.CurrentThread.ManagedThreadId.ToString() + " | Process " + Process.GetCurrentProcess().Id.ToString() + ")";
 		}
 	}
 }

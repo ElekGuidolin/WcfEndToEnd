@@ -8,3 +8,14 @@ And the way to configure the user in SQL Server Express is described in [Add IIS
 
 * At least until the time I've wrote this ReadMe, there is nothing talking about how to debug WCF and there was a thing that really helped me to find the answer above.
 It talks about hou to crate a behaviour and "bind" it to the service endpoint, and it could be found at the right answer in [Turn on IncludeExceptionDetailInFaults](http://stackoverflow.com/questions/8315633/turn-on-includeexceptiondetailinfaults-either-from-servicebehaviorattribute-or)
+
+##Transport-Level Sessions
+
+* Transport session allow service to identify its clients
+  * Kind of like a hot, open connection between Service and Client
+
+* Some bindings support transaction 
+  * netTcpBinding
+  * netNamedPipeBinding
+  * wsHttpBinding - simulate
+    * With Reliability or Security turned on - to be explained, stand by

@@ -10,7 +10,7 @@
 		<Button x:Name="btnStart" Content="Start Service" HorizontalAlignment="Left" Margin="51,28,0,0" VerticalAlignment="Top" Width="420" Height="43" FontSize="22" Click="btnStart_Click"/>
 		<Button x:Name="btnStop" Content="Stop Service" HorizontalAlignment="Left" Margin="51,91,0,0" VerticalAlignment="Top" Width="420" Height="47" FontSize="22" Click="btnStop_Click"/>
 		<Label x:Name="lblMessage" Content="" HorizontalAlignment="Left" Margin="51,207,0,0" VerticalAlignment="Top" Height="55" Width="420" Foreground="#FF0C8B18"/>
-		<Button x:Name="btnInProcService" Content="In-Proc Service" HorizontalAlignment="Left" Margin="51,161,0,0" VerticalAlignment="Top" Width="147" Height="31" FontSize="16"/>
+		<Button x:Name="btnInProcService" Content="In-Proc Service" HorizontalAlignment="Left" Margin="51,161,0,0" VerticalAlignment="Top" Width="147" Height="31" FontSize="16" Click="btnInProcService_Click"/>
 
 	</Grid>
 </Window>

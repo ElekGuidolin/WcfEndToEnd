@@ -14,12 +14,27 @@ namespace GeoLib.Client
 	/// </summary>
 	public partial class MainWindow : Window
 	{
+		StatefulGeoClient _Proxy;
+
 		public MainWindow()
 		{
 			InitializeComponent();
+			_Proxy = new StatefulGeoClient();
 		}
 
 		private void btnGetInfo_Click(object sender, RoutedEventArgs e)
+		{
+			if (!cbxStateful.IsChecked.Value)
+			{
+				GetZipInfoCommon();
+			}
+			else
+			{
+				GetZipInfoStateful();
+			}
+		}
+
+		private void GetZipInfoCommon()
 		{
 			if (!string.IsNullOrWhiteSpace(txtZipSearch.Text))
 			{
@@ -37,6 +52,20 @@ namespace GeoLib.Client
 				proxy.Close();
 			}
 		}
+
+		private void GetZipInfoStateful()
+		{
+			if (!string.IsNullOrWhiteSpace(txtZipSearch.Text))
+			{
+				ZipCodeData data = _Proxy.GetZipInfo();
+				if (data != null)
+				{
+					lblResponseCity.Content = data.City;
+					lblResponseState.Content = data.State;
+				}
+			}
+		}
+
 
 		private void btnGetZipCodes_Click(object sender, RoutedEventArgs e)
 		{
@@ -81,6 +110,26 @@ namespace GeoLib.Client
 			proxy.ShowMsg(txtTextToShow.Text);
 
 			factory.Close();
+		}
+
+		private void btnPush_Click(object sender, RoutedEventArgs e)
+		{
+			if (!string.IsNullOrWhiteSpace(txtZipSearch.Text))
+			{
+				_Proxy.PushZip(txtZipSearch.Text);
+			}
+		}
+
+		private void btnGetInRange_Click(object sender, RoutedEventArgs e)
+		{
+			if ((!string.IsNullOrWhiteSpace(txtZipSearch.Text)) && (!string.IsNullOrWhiteSpace(txtRange.Text)))
+			{
+				IEnumerable<ZipCodeData> data = _Proxy.GetZips(Convert.ToInt32(txtRange.Text));
+				if (data != null)
+				{
+					lstZips.ItemsSource = data;
+				}
+			}
 		}
 	}
 }

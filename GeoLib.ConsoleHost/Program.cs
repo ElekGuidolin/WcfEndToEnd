@@ -12,6 +12,10 @@ namespace GeoLib.ConsoleHost
 		static void Main(string[] args)
 		{
 			ServiceHost hostGeoManager = new ServiceHost(typeof(GeoManager));
+			hostGeoManager.Open();
+
+			ServiceHost hostStatefulGeoManager = new ServiceHost(typeof(StatefulGeoManager));
+			hostStatefulGeoManager.Open();
 
 			#region Programmatically Configuration (Commented)
 
@@ -43,12 +47,11 @@ namespace GeoLib.ConsoleHost
 
 			#endregion
 
-			hostGeoManager.Open();
-
 			Console.WriteLine("Services started. Press [Enter] to exit");
 			Console.ReadKey();
 
 			hostGeoManager.Close();
+			hostStatefulGeoManager.Close();
 		}
 	}
 }

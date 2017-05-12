@@ -1,6 +1,7 @@
 ﻿using GeoLib.Client.Contracts;
 using GeoLib.Contracts;
 using GeoLib.Proxies;
+using System;
 using System.Collections.Generic;
 using System.ServiceModel;
 using System.ServiceModel.Channels;
@@ -23,8 +24,8 @@ namespace GeoLib.Client
 			if (!string.IsNullOrWhiteSpace(txtZipSearch.Text))
 			{
 				//This string sent to GeoClient constructor will define which configuration will be used. Very flexible. Check App.Config.
-				//This call, in the way it's configured, will only work with WebHost
-				GeoClient proxy = new GeoClient("webEP");
+				//This call, in the way it's configured, will only work with WindowsHost. For WebHost, use webEP.
+				GeoClient proxy = new GeoClient("tcpEP");
 
 				ZipCodeData data = proxy.GetZipInfo(txtZipSearch.Text);
 				if (data != null)
@@ -42,8 +43,15 @@ namespace GeoLib.Client
 			//This call, in the way it's configured, will only work with ConsoleHost
 			if (!string.IsNullOrWhiteSpace(txtSearchState.Text))
 			{
+				//As commented in the module, it's possible to set values in the config file or programmatically.
+				//Here it was set programmatically, to change this, you just need to comment the next lines,
+				//and make the constructor passing the tcpEP string as parameter.
 				EndpointAddress address = new EndpointAddress("net.tcp://localhost:8009/GeoService");
-				Binding binding = new NetTcpBinding();
+				Binding binding = new NetTcpBinding()
+				{
+					MaxReceivedMessageSize = 2000000,
+					SendTimeout = new TimeSpan(0, 0, 5)
+				};
 
 				GeoClient proxy = new GeoClient(binding, address);
 
@@ -65,10 +73,10 @@ namespace GeoLib.Client
 
 			//This call, in the way it's configured, will only work with WindowsHost
 			EndpointAddress address = new EndpointAddress("net.tcp://localhost:8010/MessageService");
-            Binding binding = new NetTcpBinding();
-            ChannelFactory<IMessageService> factory = new ChannelFactory<IMessageService>(binding, address);
+			Binding binding = new NetTcpBinding();
+			ChannelFactory<IMessageService> factory = new ChannelFactory<IMessageService>(binding, address);
 
-            IMessageService proxy = factory.CreateChannel();
+			IMessageService proxy = factory.CreateChannel();
 
 			proxy.ShowMsg(txtTextToShow.Text);
 

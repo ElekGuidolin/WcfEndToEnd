@@ -1,6 +1,7 @@
 ﻿using GeoLib.Contracts;
 using GeoLib.Data;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace GeoLib.Services
 {
@@ -41,6 +42,9 @@ namespace GeoLib.Services
 
 		public ZipCodeData GetZipInfo(string zip)
 		{
+			//Test after set timeout to 5 seconds. It throws a timeout exception.
+			//Thread.Sleep(10000);
+
 			ZipCodeData zipCodeData = null;
 
 			IZipCodeRepository zipCodeRepository = _zipCodeRepository ?? new ZipCodeRepository();

@@ -1,9 +1,13 @@
 ﻿using GeoLib.Contracts;
 using GeoLib.Data;
 using System.Collections.Generic;
+using System.ServiceModel;
+using System.Threading;
 
 namespace GeoLib.Services
 {
+	//This is the only one behavior that can be set here.
+	//[ServiceBehavior(IncludeExceptionDetailInFaults = true)]
 	public class GeoManager : IGeoService
 	{
 		#region Fields
@@ -19,20 +23,18 @@ namespace GeoLib.Services
 		{
 		}
 
-		public GeoManager(IZipCodeRepository pzipCodeRepository)
+		public GeoManager(IZipCodeRepository pZipCodeRepository) : this(pZipCodeRepository, null)
 		{
-			_zipCodeRepository = pzipCodeRepository;
 		}
 
-		public GeoManager(IStateRepository pstateRepository)
+		public GeoManager(IStateRepository pStateRepository) : this(null, pStateRepository)
 		{
-			_stateRepository = pstateRepository;
 		}
 
-		public GeoManager(IZipCodeRepository pzipCodeRepository, IStateRepository pstateRepository)
+		public GeoManager(IZipCodeRepository pZipCodeRepository, IStateRepository pStateRepository)
 		{
-			_zipCodeRepository = pzipCodeRepository;
-			_stateRepository = pstateRepository;
+			_zipCodeRepository = pZipCodeRepository;
+			_stateRepository = pStateRepository;
 		}
 
 		#endregion
@@ -41,6 +43,9 @@ namespace GeoLib.Services
 
 		public ZipCodeData GetZipInfo(string zip)
 		{
+			//Test after set timeout to 5 seconds. It throws a timeout exception.
+			//Thread.Sleep(10000);
+
 			ZipCodeData zipCodeData = null;
 
 			IZipCodeRepository zipCodeRepository = _zipCodeRepository ?? new ZipCodeRepository();

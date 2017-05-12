@@ -4,6 +4,7 @@ using GeoLib.WindowsHost.Services;
 using System;
 using System.Diagnostics;
 using System.ServiceModel;
+using System.ServiceModel.Description;
 using System.Threading;
 using System.Windows;
 
@@ -37,6 +38,21 @@ namespace GeoLib.WindowsHost
 		{
 			_hostGeoManager = new ServiceHost(typeof(GeoManager));
 			_hostMessageManager = new ServiceHost(typeof(MessageManager));
+
+			ServiceDebugBehavior behavior = _hostGeoManager.Description.Behaviors.Find<ServiceDebugBehavior>();
+			if (behavior == null)
+			{
+				behavior = new ServiceDebugBehavior()
+				{
+					IncludeExceptionDetailInFaults = true
+				};
+				
+				_hostGeoManager.Description.Behaviors.Add(behavior);
+			}
+			else
+			{
+				behavior.IncludeExceptionDetailInFaults = true;
+			}
 
 			_hostGeoManager.Open();
 			_hostMessageManager.Open();

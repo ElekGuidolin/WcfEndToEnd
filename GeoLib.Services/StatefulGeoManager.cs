@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace GeoLib.Services
 {
-	[ServiceBehavior(InstanceContextMode = InstanceContextMode.PerCall)]
+	[ServiceBehavior(InstanceContextMode = InstanceContextMode.PerSession)]
 	public class StatefulGeoManager : IStatefulGeoService
 	{
 		ZipCode _ZipCodeEntity;

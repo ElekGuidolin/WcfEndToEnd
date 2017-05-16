@@ -3,16 +3,18 @@ using System.ServiceModel;
 
 namespace GeoLib.Contracts
 {
-	[ServiceContract]
+	//Required and Allowed is for using with Transport Level Session.
+	//NotAllowed only for basicHttpBinding
+	[ServiceContract(SessionMode = SessionMode.Required)]
 	public interface IStatefulGeoService
 	{
 		[OperationContract]
 		void PushZip(string zip);
 
-		[OperationContract]
+		[OperationContract(IsInitiating = false)]
 		ZipCodeData GetZipInfo();
 
-		[OperationContract]
+		[OperationContract(IsInitiating = false)]
 		IEnumerable<ZipCodeData> GetZips(int range);
 	}
 }

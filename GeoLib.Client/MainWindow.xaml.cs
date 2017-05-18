@@ -5,7 +5,9 @@ using System;
 using System.Collections.Generic;
 using System.ServiceModel;
 using System.ServiceModel.Channels;
+using System.Threading;
 using System.Windows;
+using System.Windows.Threading;
 
 namespace GeoLib.Client
 {
@@ -14,12 +16,16 @@ namespace GeoLib.Client
 	/// </summary>
 	public partial class MainWindow : Window
 	{
-		StatefulGeoClient _Proxy;
+		GeoClient _Proxy;
+		StatefulGeoClient _ProxyStateful;
+		SynchronizationContext _SyncContext = null;
 
 		public MainWindow()
 		{
 			InitializeComponent();
-			_Proxy = new StatefulGeoClient();
+			_Proxy = new GeoClient("tcpEP");
+			_ProxyStateful = new StatefulGeoClient();
+			_SyncContext = SynchronizationContext.Current;
 		}
 
 		private void btnGetInfo_Click(object sender, RoutedEventArgs e)
@@ -40,16 +46,21 @@ namespace GeoLib.Client
 			{
 				//This string sent to GeoClient constructor will define which configuration will be used. Very flexible. Check App.Config.
 				//This call, in the way it's configured, will only work with WindowsHost. For WebHost, use webEP.
-				GeoClient proxy = new GeoClient("tcpEP");
-
-				ZipCodeData data = proxy.GetZipInfo(txtZipSearch.Text);
-				if (data != null)
+				//GeoClient proxy = new GeoClient("tcpEP");
+				Dispatcher.BeginInvoke(DispatcherPriority.Input, new ThreadStart(() =>
 				{
-					lblResponseCity.Content = data.City;
-					lblResponseState.Content = data.State;
-				}
+					ZipCodeData data = _Proxy.GetZipInfo(txtZipSearch.Text);
+					if (data != null)
+					{
+						SendOrPostCallback callback = new SendOrPostCallback(arg =>
+						{
+							lblResponseCity.Content = data.City;
+							lblResponseState.Content = data.State;
+						});
 
-				proxy.Close();
+						_SyncContext.Send(callback, null);
+					}
+				}));
 			}
 		}
 
@@ -57,7 +68,7 @@ namespace GeoLib.Client
 		{
 			if (!string.IsNullOrWhiteSpace(txtZipSearch.Text))
 			{
-				ZipCodeData data = _Proxy.GetZipInfo();
+				ZipCodeData data = _ProxyStateful.GetZipInfo();
 				if (data != null)
 				{
 					lblResponseCity.Content = data.City;
@@ -116,7 +127,7 @@ namespace GeoLib.Client
 		{
 			if (!string.IsNullOrWhiteSpace(txtZipSearch.Text))
 			{
-				_Proxy.PushZip(txtZipSearch.Text);
+				_ProxyStateful.PushZip(txtZipSearch.Text);
 			}
 		}
 
@@ -124,7 +135,7 @@ namespace GeoLib.Client
 		{
 			if ((!string.IsNullOrWhiteSpace(txtZipSearch.Text)) && (!string.IsNullOrWhiteSpace(txtRange.Text)))
 			{
-				IEnumerable<ZipCodeData> data = _Proxy.GetZips(Convert.ToInt32(txtRange.Text));
+				IEnumerable<ZipCodeData> data = _ProxyStateful.GetZips(Convert.ToInt32(txtRange.Text));
 				if (data != null)
 				{
 					lstZips.ItemsSource = data;

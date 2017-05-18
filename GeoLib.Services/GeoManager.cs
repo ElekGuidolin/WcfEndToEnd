@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.ServiceModel;
 using System.Threading;
+using System.Windows;
 
 namespace GeoLib.Services
 {
@@ -11,7 +12,7 @@ namespace GeoLib.Services
 	//[ServiceBehavior(IncludeExceptionDetailInFaults = true)]
 	//Always set this inline, and not in config to don't risk yourself on coding for an InstanceContextMode, and the config file with another one.
 	//This, obviously, because the config doesn't need a build to be changed.
-	[ServiceBehavior(InstanceContextMode = InstanceContextMode.PerCall)]
+	[ServiceBehavior(InstanceContextMode = InstanceContextMode.PerCall, ConcurrencyMode = ConcurrencyMode.Single)]
 	public class GeoManager : IGeoService
 	{
 		#region Fields
@@ -68,7 +69,9 @@ namespace GeoLib.Services
 
 			_Counter++;
 			//Kepp this only if the Host is a Console.
-			Console.WriteLine("Count = {0}", _Counter.ToString());
+			//Console.WriteLine("Count = {0}", _Counter.ToString());
+
+			MessageBox.Show(string.Format("{0} = {1}, {2}", zip, zipCodeData.City, zipCodeData.State), "Call Counter " + _Counter.ToString());
 
 			return zipCodeData;
 		}

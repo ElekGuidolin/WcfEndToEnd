@@ -1,9 +1,7 @@
 ﻿using GeoLib.Contracts;
 using GeoLib.Data;
-using System;
 using System.Collections.Generic;
 using System.ServiceModel;
-using System.Threading;
 using System.Windows;
 
 namespace GeoLib.Services

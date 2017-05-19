@@ -7,7 +7,6 @@ using System.ServiceModel;
 using System.ServiceModel.Channels;
 using System.Threading;
 using System.Windows;
-using System.Windows.Threading;
 
 namespace GeoLib.Client
 {
@@ -23,6 +22,9 @@ namespace GeoLib.Client
 		public MainWindow()
 		{
 			InitializeComponent();
+
+			//This string sent to GeoClient constructor will define which configuration will be used. Very flexible. Check App.Config.
+			//This call, in the way it's configured, will only work with WindowsHost. For WebHost, use webEP.
 			_Proxy = new GeoClient("tcpEP");
 			_ProxyStateful = new StatefulGeoClient();
 			_SyncContext = SynchronizationContext.Current;
@@ -42,14 +44,12 @@ namespace GeoLib.Client
 
 		private void GetZipInfoCommon()
 		{
-			if (!string.IsNullOrWhiteSpace(txtZipSearch.Text))
+			string zipToSearch = txtZipSearch.Text;
+			if (!string.IsNullOrWhiteSpace(zipToSearch))
 			{
-				//This string sent to GeoClient constructor will define which configuration will be used. Very flexible. Check App.Config.
-				//This call, in the way it's configured, will only work with WindowsHost. For WebHost, use webEP.
-				//GeoClient proxy = new GeoClient("tcpEP");
-				Dispatcher.BeginInvoke(DispatcherPriority.Input, new ThreadStart(() =>
+				Thread thread = new Thread(() =>
 				{
-					ZipCodeData data = _Proxy.GetZipInfo(txtZipSearch.Text);
+					ZipCodeData data = _Proxy.GetZipInfo(zipToSearch);
 					if (data != null)
 					{
 						SendOrPostCallback callback = new SendOrPostCallback(arg =>
@@ -60,7 +60,12 @@ namespace GeoLib.Client
 
 						_SyncContext.Send(callback, null);
 					}
-				}));
+				})
+				{
+					IsBackground = true
+				};
+
+				thread.Start();
 			}
 		}
 
@@ -76,7 +81,6 @@ namespace GeoLib.Client
 				}
 			}
 		}
-
 
 		private void btnGetZipCodes_Click(object sender, RoutedEventArgs e)
 		{
@@ -107,7 +111,7 @@ namespace GeoLib.Client
 
 		private void btnMakeCall_Click(object sender, RoutedEventArgs e)
 		{
-			//Not fixed bug. Need to call with "" parameter. Same as three line below, but without .config file.
+			//Not fixed bug. Need to call new ChannelFactory with "" parameter. Same as three line below, but without .config file.
 			//To uncomment, need to uncomment .config, and comment below.
 			//ChannelFactory<IMessageService> factory = new ChannelFactory<IMessageService>("");
 
@@ -142,5 +146,6 @@ namespace GeoLib.Client
 				}
 			}
 		}
+
 	}
 }

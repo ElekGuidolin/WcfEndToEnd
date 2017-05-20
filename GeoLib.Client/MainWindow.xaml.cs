@@ -5,6 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.ServiceModel;
 using System.ServiceModel.Channels;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 
 namespace GeoLib.Client
@@ -14,27 +16,98 @@ namespace GeoLib.Client
 	/// </summary>
 	public partial class MainWindow : Window
 	{
+		GeoClient _Proxy;
+		StatefulGeoClient _ProxyStateful;
+		SynchronizationContext _SyncContext = null;
+
 		public MainWindow()
 		{
 			InitializeComponent();
+
+			//This string sent to GeoClient constructor will define which configuration will be used. Very flexible. Check App.Config.
+			//This call, in the way it's configured, will only work with WindowsHost. For WebHost, use webEP.
+			_Proxy = new GeoClient("tcpEP");
+
+            //Sleeping to have the chance to click Start Service on WindowsHost.
+            Thread.Sleep(3000);
+            _Proxy.Open();
+
+            _ProxyStateful = new StatefulGeoClient();
+			_SyncContext = SynchronizationContext.Current;
 		}
 
 		private void btnGetInfo_Click(object sender, RoutedEventArgs e)
 		{
+			if (!cbxStateful.IsChecked.Value)
+			{
+                GetZipInfoCommon();
+			}
+			else
+			{
+				GetZipInfoStateful();
+			}
+		}
+
+        //Old way to do with thread. From now on use the async way.
+        //private void GetZipInfoCommon()
+        //{
+        //	string zipToSearch = txtZipSearch.Text;
+        //	if (!string.IsNullOrWhiteSpace(zipToSearch))
+        //	{
+        //		Thread thread = new Thread(() =>
+        //		{
+        //			ZipCodeData data = _Proxy.GetZipInfo(zipToSearch);
+        //			if (data != null)
+        //			{
+        //				SendOrPostCallback callback = new SendOrPostCallback(arg =>
+        //				{
+        //					lblResponseCity.Content = data.City;
+        //					lblResponseState.Content = data.State;
+        //				});
+
+        //				_SyncContext.Send(callback, null);
+        //			}
+        //		})
+        //		{
+        //			IsBackground = true
+        //		};
+
+        //		thread.Start();
+        //	}
+        //}
+
+        private async void GetZipInfoCommon()
+        {
+            string zipToSearch = txtZipSearch.Text;
+            if (!string.IsNullOrWhiteSpace(zipToSearch))
+            {
+                await Task.Run(() =>
+                {
+                    ZipCodeData data = _Proxy.GetZipInfo(zipToSearch);
+                    if (data != null)
+                    {
+                        SendOrPostCallback callback = new SendOrPostCallback(arg =>
+                        {
+                            lblResponseCity.Content = data.City;
+                            lblResponseState.Content = data.State;
+                        });
+
+                        _SyncContext.Send(callback, null);
+                    }
+                });
+            }
+        }
+
+        private void GetZipInfoStateful()
+		{
 			if (!string.IsNullOrWhiteSpace(txtZipSearch.Text))
 			{
-				//This string sent to GeoClient constructor will define which configuration will be used. Very flexible. Check App.Config.
-				//This call, in the way it's configured, will only work with WindowsHost. For WebHost, use webEP.
-				GeoClient proxy = new GeoClient("tcpEP");
-
-				ZipCodeData data = proxy.GetZipInfo(txtZipSearch.Text);
+				ZipCodeData data = _ProxyStateful.GetZipInfo();
 				if (data != null)
 				{
 					lblResponseCity.Content = data.City;
 					lblResponseState.Content = data.State;
 				}
-
-				proxy.Close();
 			}
 		}
 
@@ -67,7 +140,7 @@ namespace GeoLib.Client
 
 		private void btnMakeCall_Click(object sender, RoutedEventArgs e)
 		{
-			//Not fixed bug. Need to call with "" parameter. Same as three line below, but without .config file.
+			//Not fixed bug. Need to call new ChannelFactory with "" parameter. Same as three line below, but without .config file.
 			//To uncomment, need to uncomment .config, and comment below.
 			//ChannelFactory<IMessageService> factory = new ChannelFactory<IMessageService>("");
 
@@ -82,5 +155,26 @@ namespace GeoLib.Client
 
 			factory.Close();
 		}
+
+		private void btnPush_Click(object sender, RoutedEventArgs e)
+		{
+			if (!string.IsNullOrWhiteSpace(txtZipSearch.Text))
+			{
+				_ProxyStateful.PushZip(txtZipSearch.Text);
+			}
+		}
+
+		private void btnGetInRange_Click(object sender, RoutedEventArgs e)
+		{
+			if ((!string.IsNullOrWhiteSpace(txtZipSearch.Text)) && (!string.IsNullOrWhiteSpace(txtRange.Text)))
+			{
+				IEnumerable<ZipCodeData> data = _ProxyStateful.GetZips(Convert.ToInt32(txtRange.Text));
+				if (data != null)
+				{
+					lstZips.ItemsSource = data;
+				}
+			}
+		}
+
 	}
 }

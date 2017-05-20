@@ -29,7 +29,7 @@ namespace GeoLib.Client
 			_Proxy = new GeoClient("tcpEP");
 
             //Sleeping to have the chance to click Start Service on WindowsHost.
-            Thread.Sleep(10000);
+            Thread.Sleep(3000);
             _Proxy.Open();
 
             _ProxyStateful = new StatefulGeoClient();
@@ -48,6 +48,7 @@ namespace GeoLib.Client
 			}
 		}
 
+        //Old way to do with thread. From now on use the async way.
         //private void GetZipInfoCommon()
         //{
         //	string zipToSearch = txtZipSearch.Text;

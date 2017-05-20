@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.ServiceModel;
 using System.ServiceModel.Channels;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 
 namespace GeoLib.Client
@@ -26,7 +27,12 @@ namespace GeoLib.Client
 			//This string sent to GeoClient constructor will define which configuration will be used. Very flexible. Check App.Config.
 			//This call, in the way it's configured, will only work with WindowsHost. For WebHost, use webEP.
 			_Proxy = new GeoClient("tcpEP");
-			_ProxyStateful = new StatefulGeoClient();
+
+            //Sleeping to have the chance to click Start Service on WindowsHost.
+            Thread.Sleep(10000);
+            _Proxy.Open();
+
+            _ProxyStateful = new StatefulGeoClient();
 			_SyncContext = SynchronizationContext.Current;
 		}
 
@@ -34,7 +40,7 @@ namespace GeoLib.Client
 		{
 			if (!cbxStateful.IsChecked.Value)
 			{
-				GetZipInfoCommon();
+                GetZipInfoCommon();
 			}
 			else
 			{
@@ -42,34 +48,56 @@ namespace GeoLib.Client
 			}
 		}
 
-		private void GetZipInfoCommon()
-		{
-			string zipToSearch = txtZipSearch.Text;
-			if (!string.IsNullOrWhiteSpace(zipToSearch))
-			{
-				Thread thread = new Thread(() =>
-				{
-					ZipCodeData data = _Proxy.GetZipInfo(zipToSearch);
-					if (data != null)
-					{
-						SendOrPostCallback callback = new SendOrPostCallback(arg =>
-						{
-							lblResponseCity.Content = data.City;
-							lblResponseState.Content = data.State;
-						});
+        //private void GetZipInfoCommon()
+        //{
+        //	string zipToSearch = txtZipSearch.Text;
+        //	if (!string.IsNullOrWhiteSpace(zipToSearch))
+        //	{
+        //		Thread thread = new Thread(() =>
+        //		{
+        //			ZipCodeData data = _Proxy.GetZipInfo(zipToSearch);
+        //			if (data != null)
+        //			{
+        //				SendOrPostCallback callback = new SendOrPostCallback(arg =>
+        //				{
+        //					lblResponseCity.Content = data.City;
+        //					lblResponseState.Content = data.State;
+        //				});
 
-						_SyncContext.Send(callback, null);
-					}
-				})
-				{
-					IsBackground = true
-				};
+        //				_SyncContext.Send(callback, null);
+        //			}
+        //		})
+        //		{
+        //			IsBackground = true
+        //		};
 
-				thread.Start();
-			}
-		}
+        //		thread.Start();
+        //	}
+        //}
 
-		private void GetZipInfoStateful()
+        private async void GetZipInfoCommon()
+        {
+            string zipToSearch = txtZipSearch.Text;
+            if (!string.IsNullOrWhiteSpace(zipToSearch))
+            {
+                await Task.Run(() =>
+                {
+                    ZipCodeData data = _Proxy.GetZipInfo(zipToSearch);
+                    if (data != null)
+                    {
+                        SendOrPostCallback callback = new SendOrPostCallback(arg =>
+                        {
+                            lblResponseCity.Content = data.City;
+                            lblResponseState.Content = data.State;
+                        });
+
+                        _SyncContext.Send(callback, null);
+                    }
+                });
+            }
+        }
+
+        private void GetZipInfoStateful()
 		{
 			if (!string.IsNullOrWhiteSpace(txtZipSearch.Text))
 			{

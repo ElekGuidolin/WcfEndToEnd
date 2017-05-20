@@ -6,11 +6,19 @@ using System.Windows;
 
 namespace GeoLib.Services
 {
-	//This is the only one behavior that can be set here.
-	//[ServiceBehavior(IncludeExceptionDetailInFaults = true)]
-	//Always set this inline, and not in config to don't risk yourself on coding for an InstanceContextMode, and the config file with another one.
-	//This, obviously, because the config doesn't need a build to be changed.
-	[ServiceBehavior(InstanceContextMode = InstanceContextMode.PerCall, ConcurrencyMode = ConcurrencyMode.Single)]
+    //This is the only one behavior that can be set here.
+    //[ServiceBehavior(IncludeExceptionDetailInFaults = true)]
+    //Always set this inline, and not in config to don't risk yourself on coding for an InstanceContextMode, and the config file with another one.
+    //This, obviously, because the config doesn't need a build to be changed.
+
+    //InstanceContextMode.PerCall and ConcurrencyMode = ConcurrencyMode.Single will reload _Counter at every call.
+    //InstanceContextMode.PerSession and ConcurrencyMode = ConcurrencyMode.Single will increment _Counter at every call.
+    //InstanceContextMode.Single and ConcurrencyMode = ConcurrencyMode.Single will increment _Counter at every call, but it will response one per call even with multiple client call.
+
+    //InstanceContextMode.PerCall and ConcurrencyMode = ConcurrencyMode.Multiple will start a lot of hosts, but reset _Counter.
+    //InstanceContextMode.PerSession and ConcurrencyMode = ConcurrencyMode.Multiple will increment _Counter at every call, but it have no control under the last call. The last response shown, it is the lastest client's confirmation.
+    //InstanceContextMode.Single and ConcurrencyMode = ConcurrencyMode.Multiple will increment the _Counter, but return different responses for each client call.
+    [ServiceBehavior(InstanceContextMode = InstanceContextMode.Single, ConcurrencyMode = ConcurrencyMode.Multiple)]
 	public class GeoManager : IGeoService
 	{
 		#region Fields
@@ -65,7 +73,13 @@ namespace GeoLib.Services
 				};
 			}
 
-			_Counter++;
+            lock (this)
+            {
+                _Counter++;
+            }
+
+            //MyStaticResource.DoSomething();
+			
 			//Kepp this only if the Host is a Console.
 			//Console.WriteLine("Count = {0}", _Counter.ToString());
 
@@ -142,4 +156,17 @@ namespace GeoLib.Services
 
 		#endregion
 	}
+}
+
+public static class MyStaticResource
+{
+    static object _Lock = new object();
+
+    public static void DoSomething()
+    {
+        lock (_Lock)
+        {
+
+        }
+    }
 }

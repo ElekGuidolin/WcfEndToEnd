@@ -78,23 +78,33 @@ namespace GeoLib.Client
 
         private async void GetZipInfoCommon()
         {
-            string zipToSearch = txtZipSearch.Text;
-            if (!string.IsNullOrWhiteSpace(zipToSearch))
+            try
             {
-                await Task.Run(() =>
+                string zipToSearch = txtZipSearch.Text;
+                if (!string.IsNullOrWhiteSpace(zipToSearch))
                 {
-                    ZipCodeData data = _Proxy.GetZipInfo(zipToSearch);
-                    if (data != null)
+                    await Task.Run(() =>
                     {
-                        SendOrPostCallback callback = new SendOrPostCallback(arg =>
+                        ZipCodeData data = _Proxy.GetZipInfo(zipToSearch);
+                        if (data != null)
                         {
-                            lblResponseCity.Content = data.City;
-                            lblResponseState.Content = data.State;
-                        });
+                            SendOrPostCallback callback = new SendOrPostCallback(arg =>
+                            {
+                                lblResponseCity.Content = data.City;
+                                lblResponseState.Content = data.State;
+                            });
 
-                        _SyncContext.Send(callback, null);
-                    }
-                });
+                            _SyncContext.Send(callback, null);
+                        }
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Exception thrown by service.\n\rException Type: " +
+                    ex.GetType().Name + "\n\r" +
+                    "Message: " + ex.Message + "\n\r" +
+                    "Proxy State: " + _Proxy.State.ToString());
             }
         }
 

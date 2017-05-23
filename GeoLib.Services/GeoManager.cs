@@ -1,5 +1,6 @@
 ﻿using GeoLib.Contracts;
 using GeoLib.Data;
+using System;
 using System.Collections.Generic;
 using System.ServiceModel;
 using System.Windows;
@@ -18,8 +19,12 @@ namespace GeoLib.Services
     //InstanceContextMode.PerCall and ConcurrencyMode = ConcurrencyMode.Multiple will start a lot of hosts, but reset _Counter.
     //InstanceContextMode.PerSession and ConcurrencyMode = ConcurrencyMode.Multiple will increment _Counter at every call, but it have no control under the last call. The last response shown, it is the lastest client's confirmation.
     //InstanceContextMode.Single and ConcurrencyMode = ConcurrencyMode.Multiple will increment the _Counter, but return different responses for each client call.
-    [ServiceBehavior(InstanceContextMode = InstanceContextMode.Single, ConcurrencyMode = ConcurrencyMode.Multiple)]
-	public class GeoManager : IGeoService
+    [ServiceBehavior(InstanceContextMode = InstanceContextMode.Single,
+                    ConcurrencyMode = ConcurrencyMode.Multiple,
+                    IncludeExceptionDetailInFaults = false)]
+                    //
+                    //IncludeExceptionDetailInFaults = false)]
+    public class GeoManager : IGeoService
 	{
 		#region Fields
 
@@ -72,6 +77,10 @@ namespace GeoLib.Services
 					ZipCode = zipCodeEntity.Zip
 				};
 			}
+            else
+            {
+                throw new ApplicationException(string.Format("Zip code {0} not found.", zip));
+            }
 
             lock (this)
             {

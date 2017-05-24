@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:GeoLib.Client"
         mc:Ignorable="d"
-        Title="MainWindow" Height="381.144" Width="632.521">
+        Title="MainWindow" Height="415.811" Width="605.854">
 	<Grid>
 		<Label x:Name="lblZip" Content="Zip Code" HorizontalAlignment="Left" Margin="10,21,0,0" VerticalAlignment="Top" Width="64"/>
 		<TextBox x:Name="txtZipSearch" HorizontalAlignment="Left" Height="23" Margin="79,23,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
@@ -18,7 +18,7 @@
 		<Label x:Name="lblTextToShow" Content="Text to Show:" HorizontalAlignment="Left" Margin="10,194,0,0" VerticalAlignment="Top" Width="99"/>
 		<TextBox x:Name="txtTextToShow" HorizontalAlignment="Left" Height="23" Margin="10,220,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="258"/>
 		<Button x:Name="btnMakeCall" Content="Make Call" HorizontalAlignment="Left" Margin="169,248,0,0" VerticalAlignment="Top" Width="99" Click="btnMakeCall_Click"/>
-		<ListBox x:Name="lstZips" HorizontalAlignment="Left" Height="171" Margin="343,170,0,0" VerticalAlignment="Top" Width="216">
+		<ListBox x:Name="lstZips" HorizontalAlignment="Left" Height="177" Margin="343,170,0,0" VerticalAlignment="Top" Width="216">
 			<ListBox.ItemTemplate>
 				<DataTemplate>
 					<StackPanel Orientation="Horizontal">
@@ -34,6 +34,8 @@
 		<TextBox x:Name="txtRange" HorizontalAlignment="Left" Height="23" Margin="429,104,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="130"/>
 		<Button x:Name="btnGetInRange" Content="Get in Range" HorizontalAlignment="Left" Margin="429,132,0,0" VerticalAlignment="Top" Width="130" Click="btnGetInRange_Click"/>
 		<CheckBox x:Name="cbxStateful" Content="Use Stateful" HorizontalAlignment="Left" Margin="10,80,0,0" VerticalAlignment="Top" Width="87"/>
+		<Button x:Name="btnUpdateBatch" Content="Update Batch" HorizontalAlignment="Left" Margin="10,325,0,0" VerticalAlignment="Top" Width="99" Click="btnUpdateBatch_Click"/>
+		<Button x:Name="btnPutBack" Content="Put Back" HorizontalAlignment="Left" Margin="127,325,0,0" VerticalAlignment="Top" Width="99" Click="btnPutBack_Click"/>
 
 	</Grid>
 </Window>

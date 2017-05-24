@@ -3,28 +3,26 @@ using GeoLib.Data;
 using System;
 using System.Collections.Generic;
 using System.ServiceModel;
-using System.Windows;
 
 namespace GeoLib.Services
 {
-    //This is the only one behavior that can be set here.
-    //[ServiceBehavior(IncludeExceptionDetailInFaults = true)]
-    //Always set this inline, and not in config to don't risk yourself on coding for an InstanceContextMode, and the config file with another one.
-    //This, obviously, because the config doesn't need a build to be changed.
+	//This is the only one behavior that can be set here.
+	//[ServiceBehavior(IncludeExceptionDetailInFaults = true)]
+	//Always set this inline, and not in config to don't risk yourself on coding for an InstanceContextMode, and the config file with another one.
+	//This, obviously, because the config doesn't need a build to be changed.
 
-    //InstanceContextMode.PerCall and ConcurrencyMode = ConcurrencyMode.Single will reload _Counter at every call.
-    //InstanceContextMode.PerSession and ConcurrencyMode = ConcurrencyMode.Single will increment _Counter at every call.
-    //InstanceContextMode.Single and ConcurrencyMode = ConcurrencyMode.Single will increment _Counter at every call, but it will response one per call even with multiple client call.
+	//InstanceContextMode.PerCall and ConcurrencyMode = ConcurrencyMode.Single will reload _Counter at every call.
+	//InstanceContextMode.PerSession and ConcurrencyMode = ConcurrencyMode.Single will increment _Counter at every call.
+	//InstanceContextMode.Single and ConcurrencyMode = ConcurrencyMode.Single will increment _Counter at every call, but it will response one per call even with multiple client call.
 
-    //InstanceContextMode.PerCall and ConcurrencyMode = ConcurrencyMode.Multiple will start a lot of hosts, but reset _Counter.
-    //InstanceContextMode.PerSession and ConcurrencyMode = ConcurrencyMode.Multiple will increment _Counter at every call, but it have no control under the last call. The last response shown, it is the lastest client's confirmation.
-    //InstanceContextMode.Single and ConcurrencyMode = ConcurrencyMode.Multiple will increment the _Counter, but return different responses for each client call.
-    [ServiceBehavior(InstanceContextMode = InstanceContextMode.Single,
-                    ConcurrencyMode = ConcurrencyMode.Multiple,
-                    IncludeExceptionDetailInFaults = false)]
-                    //
-                    //IncludeExceptionDetailInFaults = false)]
-    public class GeoManager : IGeoService
+	//InstanceContextMode.PerCall and ConcurrencyMode = ConcurrencyMode.Multiple will start a lot of hosts, but reset _Counter.
+	//InstanceContextMode.PerSession and ConcurrencyMode = ConcurrencyMode.Multiple will increment _Counter at every call, but it have no control under the last call. The last response shown, it is the lastest client's confirmation.
+	//InstanceContextMode.Single and ConcurrencyMode = ConcurrencyMode.Multiple will increment the _Counter, but return different responses for each client call.
+
+	[ServiceBehavior(InstanceContextMode = InstanceContextMode.Single,
+					ConcurrencyMode = ConcurrencyMode.Multiple,
+					IncludeExceptionDetailInFaults = true)]
+	public class GeoManager : IGeoService
 	{
 		#region Fields
 
@@ -79,20 +77,40 @@ namespace GeoLib.Services
 			}
             else
             {
-                throw new ApplicationException(string.Format("Zip code {0} not found.", zip));
-            }
+				//Used as Unhandled Exception. Sets the proxy state at the client to "Faulted"
+				//throw new ApplicationException(string.Format("Zip code {0} not found.", zip));
 
-            lock (this)
-            {
-                _Counter++;
-            }
+				//Used as Handled Exception. Keeps the proxy state at the client to "Opened"
+				//throw new FaultException(string.Format("Zip code {0} not found.", zip));
 
-            //MyStaticResource.DoSomething();
-			
-			//Kepp this only if the Host is a Console.
+				//Used with FaultContract that must be declared at the contract level, the IGeoService in this case. Keeps the proxy state at the client to "Opened"
+				//ApplicationException ex = new ApplicationException(string.Format("Zip code {0} not found.", zip));
+				//throw new FaultException<ApplicationException>(ex, "Just another message");
+
+				//Better and most powerful way to throw an exception. Using FaultContract that must be declared at the contract level, 
+				//and using a custom Class to define and send the information needed. Keeps the proxy state at the client to "Opened"
+				NotFoundData data = new NotFoundData()
+				{
+					Message = string.Format("Zip code {0} not found.", zip),
+					When = DateTime.Now.ToString(),
+					User = "elguidolin" //It can be recovered by Identity or anythin else.
+				};
+
+				throw new FaultException<NotFoundData>(data, "Just another message.");
+			}
+
+			//lock (this)
+			//{
+			//    _Counter++;
+			//}
+
+			//MyStaticResource.DoSomething();
+
+			//Keep this only if the Host is a Console.
 			//Console.WriteLine("Count = {0}", _Counter.ToString());
 
-			MessageBox.Show(string.Format("{0} = {1}, {2}", zip, zipCodeData.City, zipCodeData.State), "Call Counter " + _Counter.ToString());
+			//Used in Instancing and Concurrency for demonstration. Need reference to PresentationFramework and using System.Window;
+			//MessageBox.Show(string.Format("{0} = {1}, {2}", zip, zipCodeData.City, zipCodeData.State), "Call Counter " + _Counter.ToString());
 
 			return zipCodeData;
 		}

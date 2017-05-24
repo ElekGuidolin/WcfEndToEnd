@@ -181,9 +181,11 @@ namespace GeoLib.Services
 			return zipCodeData;
 		}
 
+		[OperationBehavior(TransactionScopeRequired = true)]
 		public void UpdateZipCity(string zip, string city)
 		{
 			IZipCodeRepository zipCodeRepository = _zipCodeRepository ?? new ZipCodeRepository();
+
 			ZipCode zipEntity = zipCodeRepository.GetByZip(zip);
 			if (zipEntity != null)
 			{
@@ -192,17 +194,38 @@ namespace GeoLib.Services
 			}
 		}
 
+		//Setting the TransactionScopeRequired = true will make this method transaction friendly, wich means that if there is a transaction already exists, and call this method,
+		//it will be part of the transaction. If no transaction exists, it will start a new one, and everything inside the method, will be controlled by this transaction.
+		//Setting to false, even if a transaction already exists, this method will not be controlled by the transaction.
+		[OperationBehavior(TransactionScopeRequired = true)]
 		public void UpdateZipCity(IEnumerable<ZipCityData> zipCityData)
 		{
 			IZipCodeRepository zipCodeRepository = _zipCodeRepository ?? new ZipCodeRepository();
 
-			Dictionary<string, string> cityBatch = new Dictionary<string, string>();
+			//Dictionary<string, string> cityBatch = new Dictionary<string, string>();
+
+			//foreach (ZipCityData zipCityItem in zipCityData)
+			//{
+			//	cityBatch.Add(zipCityItem.Zip, zipCityItem.City);
+			//}
+
+			//zipCodeRepository.UpdateCityBatch(cityBatch);
+
+			int counter = 0;
+
 			foreach (ZipCityData zipCityItem in zipCityData)
 			{
-				cityBatch.Add(zipCityItem.Zip, zipCityItem.City);
-			}
+				counter++;
 
-			zipCodeRepository.UpdateCityBatch(cityBatch);
+				if (counter == 2)
+				{
+					throw new FaultException("Sorry, can't touch this!");
+				}
+
+				ZipCode zipCodeEntity = zipCodeRepository.GetByZip(zipCityItem.Zip);
+				zipCodeEntity.City = zipCityItem.City;
+				ZipCode updateItem = zipCodeRepository.Update(zipCodeEntity);
+			}
 		}
 
 		#endregion

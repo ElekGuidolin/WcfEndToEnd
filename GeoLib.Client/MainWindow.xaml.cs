@@ -220,8 +220,8 @@ namespace GeoLib.Client
 		{
 			List<ZipCityData> cityZipList = new List<ZipCityData>()
 			{
-				new ZipCityData() { Zip="07035", City="Bedrock"},
-				new ZipCityData() { Zip="33030", City="End of the World"}
+				new ZipCityData() { Zip = "07035", City = "Bedrock"},
+				new ZipCityData() { Zip = "33030", City = "End of the World"}
 			};
 
 			try
@@ -242,8 +242,8 @@ namespace GeoLib.Client
 		{
 			List<ZipCityData> cityZipList = new List<ZipCityData>()
 			{
-				new ZipCityData() { Zip="07035", City="Lincoln Park"},
-				new ZipCityData() { Zip="33030", City="Homestead"}
+				new ZipCityData() { Zip = "07035", City = "Lincoln Park"},
+				new ZipCityData() { Zip = "33030", City = "Homestead"}
 			};
 
 			try

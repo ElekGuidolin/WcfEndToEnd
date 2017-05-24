@@ -78,24 +78,64 @@ namespace GeoLib.Client
 
         private async void GetZipInfoCommon()
         {
-            string zipToSearch = txtZipSearch.Text;
-            if (!string.IsNullOrWhiteSpace(zipToSearch))
-            {
-                await Task.Run(() =>
-                {
-                    ZipCodeData data = _Proxy.GetZipInfo(zipToSearch);
-                    if (data != null)
-                    {
-                        SendOrPostCallback callback = new SendOrPostCallback(arg =>
-                        {
-                            lblResponseCity.Content = data.City;
-                            lblResponseState.Content = data.State;
-                        });
+			try
+			{
+				string zipToSearch = txtZipSearch.Text;
+				if (!string.IsNullOrWhiteSpace(zipToSearch))
+				{
+					await Task.Run(() =>
+					{
+						ZipCodeData data = _Proxy.GetZipInfo(zipToSearch);
+						if (data != null)
+						{
+							SendOrPostCallback callback = new SendOrPostCallback(arg =>
+							{
+								lblResponseCity.Content = data.City;
+								lblResponseState.Content = data.State;
+							});
 
-                        _SyncContext.Send(callback, null);
-                    }
-                });
-            }
+							_SyncContext.Send(callback, null);
+						}
+					});
+				}
+			}
+			catch (FaultException<ExceptionDetail> ex)
+			{
+				MessageBox.Show("FaultException<ExceptionDetail> thrown by service.\n\rException Type: " +
+					"FaultException<ExceptionDetail>\n\r" +
+					"Message: " + ex.Detail.Message + "\n\r" +
+					"Proxy State: " + _Proxy.State.ToString());
+			}
+			catch (FaultException<ApplicationException> ex)
+			{
+				MessageBox.Show("FaultException<ApplicationException> thrown by service.\n\rException Type: " +
+					"FaultException<ApplicationException>\n\r" +
+					"Reason: " + ex.Message + "\n\r" +
+					"Message: " + ex.Detail.Message + "\n\r" +
+					"Proxy State: " + _Proxy.State.ToString());
+			}
+			catch(FaultException<NotFoundData> ex)
+			{
+				MessageBox.Show("FaultException<NotFoundData> thrown by service.\n\rException Type: " +
+					"FaultException<NotFoundData>\n\r" +
+					"Reason: " + ex.Message + "\n\r" +
+					"Message: " + ex.Detail.Message + "\n\r" +
+					"Proxy State: " + _Proxy.State.ToString());
+			}
+			catch (FaultException ex)
+			{
+				MessageBox.Show("FaultException thrown by service.\n\rException Type: " +
+					ex.GetType().Name + "\n\r" +
+					"Message: " + ex.Message + "\n\r" +
+					"Proxy State: " + _Proxy.State.ToString());
+			}
+			catch (Exception ex)
+			{
+				MessageBox.Show("Exception thrown by service.\n\rException Type: " +
+					ex.GetType().Name + "\n\r" +
+					"Message: " + ex.Message + "\n\r" +
+					"Proxy State: " + _Proxy.State.ToString());
+			}
         }
 
         private void GetZipInfoStateful()

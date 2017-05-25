@@ -7,6 +7,7 @@ using System.ServiceModel;
 using System.ServiceModel.Channels;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Transactions;
 using System.Windows;
 
 namespace GeoLib.Client
@@ -226,13 +227,27 @@ namespace GeoLib.Client
 
 			try
 			{
-				GeoClient proxy = new GeoClient("tcpEP");
-				proxy.UpdateZipCity(cityZipList);
-				proxy.Close();
+                //Way to do with transaction controlled by the service.
+                //GeoClient proxy = new GeoClient("tcpEP");
+                //proxy.UpdateZipCity(cityZipList);
+                //proxy.Close();
 
-				MessageBox.Show("Updated");
-			}
-			catch (Exception ex)
+                //MessageBox.Show("Updated");
+
+                //Way to do with transaction controlled by the client.
+                GeoClient proxy = new GeoClient("tcpEP");
+
+                using (TransactionScope scope = new TransactionScope())
+                {
+                    proxy.UpdateZipCity(cityZipList);
+                    scope.Complete();
+                }
+                
+                proxy.Close();
+
+                MessageBox.Show("Updated");
+            }
+            catch (Exception ex)
 			{
 				MessageBox.Show("Error");
 			}

@@ -3,25 +3,26 @@ using GeoLib.Data;
 using System;
 using System.Collections.Generic;
 using System.ServiceModel;
+using System.Transactions;
 
 namespace GeoLib.Services
 {
-	//This is the only one behavior that can be set here.
-	//[ServiceBehavior(IncludeExceptionDetailInFaults = true)]
-	//Always set this inline, and not in config to don't risk yourself on coding for an InstanceContextMode, and the config file with another one.
-	//This, obviously, because the config doesn't need a build to be changed.
+    //This is the only one behavior that can be set here.
+    //[ServiceBehavior(IncludeExceptionDetailInFaults = true)]
+    //Always set this inline, and not in config to don't risk yourself on coding for an InstanceContextMode, and the config file with another one.
+    //This, obviously, because the config doesn't need a build to be changed.
 
-	//InstanceContextMode.PerCall and ConcurrencyMode = ConcurrencyMode.Single will reload _Counter at every call.
-	//InstanceContextMode.PerSession and ConcurrencyMode = ConcurrencyMode.Single will increment _Counter at every call.
-	//InstanceContextMode.Single and ConcurrencyMode = ConcurrencyMode.Single will increment _Counter at every call, but it will response one per call even with multiple client call.
+    //InstanceContextMode.PerCall and ConcurrencyMode = ConcurrencyMode.Single will reload _Counter at every call.
+    //InstanceContextMode.PerSession and ConcurrencyMode = ConcurrencyMode.Single will increment _Counter at every call.
+    //InstanceContextMode.Single and ConcurrencyMode = ConcurrencyMode.Single will increment _Counter at every call, but it will response one per call even with multiple client call.
 
-	//InstanceContextMode.PerCall and ConcurrencyMode = ConcurrencyMode.Multiple will start a lot of hosts, but reset _Counter.
-	//InstanceContextMode.PerSession and ConcurrencyMode = ConcurrencyMode.Multiple will increment _Counter at every call, but it have no control under the last call. The last response shown, it is the lastest client's confirmation.
-	//InstanceContextMode.Single and ConcurrencyMode = ConcurrencyMode.Multiple will increment the _Counter, but return different responses for each client call.
+    //InstanceContextMode.PerCall and ConcurrencyMode = ConcurrencyMode.Multiple will start a lot of hosts, but reset _Counter.
+    //InstanceContextMode.PerSession and ConcurrencyMode = ConcurrencyMode.Multiple will increment _Counter at every call, but it have no control under the last call. The last response shown, it is the lastest client's confirmation.
+    //InstanceContextMode.Single and ConcurrencyMode = ConcurrencyMode.Multiple will increment the _Counter, but return different responses for each client call.
 
-	[ServiceBehavior(InstanceContextMode = InstanceContextMode.Single,
-					ConcurrencyMode = ConcurrencyMode.Multiple,
-					IncludeExceptionDetailInFaults = true)]
+    //ReleaseServiceInstanceOnTransactionComplete = false inside ServiceBehavior is required when InstanceContextMode = PerSession
+    [ServiceBehavior(ReleaseServiceInstanceOnTransactionComplete = false,
+                    InstanceContextMode = InstanceContextMode.PerCall)]
 	public class GeoManager : IGeoService
 	{
 		#region Fields
@@ -194,42 +195,83 @@ namespace GeoLib.Services
 			}
 		}
 
-		//Setting the TransactionScopeRequired = true will make this method transaction friendly, wich means that if there is a transaction already exists, and call this method,
-		//it will be part of the transaction. If no transaction exists, it will start a new one, and everything inside the method, will be controlled by this transaction.
-		//Setting to false, even if a transaction already exists, this method will not be controlled by the transaction.
-		[OperationBehavior(TransactionScopeRequired = true)]
-		public void UpdateZipCity(IEnumerable<ZipCityData> zipCityData)
-		{
-			IZipCodeRepository zipCodeRepository = _zipCodeRepository ?? new ZipCodeRepository();
+        //Setting the TransactionScopeRequired = true will make this method a transaction friendly method, wich means that if a transaction already exists, and call this method,
+        //it will be part of the transaction.If no transaction exists, it will start a new one, and everything inside the method, will be controlled by this transaction.
+        //Setting to false, even if a transaction already exists, this method will not be controlled by the transaction.
+        //To perform manual transaction commit, set TransactionAutoComplete = false
+        //[OperationBehavior(TransactionScopeRequired = true)]
+        [OperationBehavior(TransactionScopeRequired = false)]
+        public void UpdateZipCity(IEnumerable<ZipCityData> zipCityData)
+        {
+            IZipCodeRepository zipCodeRepository = _zipCodeRepository ?? new ZipCodeRepository();
 
-			//Dictionary<string, string> cityBatch = new Dictionary<string, string>();
+            #region Good code. Try to do this way always.
 
-			//foreach (ZipCityData zipCityItem in zipCityData)
-			//{
-			//	cityBatch.Add(zipCityItem.Zip, zipCityItem.City);
-			//}
+            //Dictionary<string, string> cityBatch = new Dictionary<string, string>();
 
-			//zipCodeRepository.UpdateCityBatch(cityBatch);
+            //foreach (ZipCityData zipCityItem in zipCityData)
+            //{
+            //	cityBatch.Add(zipCityItem.Zip, zipCityItem.City);
+            //}
 
-			int counter = 0;
+            //zipCodeRepository.UpdateCityBatch(cityBatch);
 
-			foreach (ZipCityData zipCityItem in zipCityData)
-			{
-				counter++;
+            #endregion
 
-				if (counter == 2)
-				{
-					throw new FaultException("Sorry, can't touch this!");
-				}
+            #region Throw Error
 
-				ZipCode zipCodeEntity = zipCodeRepository.GetByZip(zipCityItem.Zip);
-				zipCodeEntity.City = zipCityItem.City;
-				ZipCode updateItem = zipCodeRepository.Update(zipCodeEntity);
-			}
-		}
+            int counter = 0;
 
-		#endregion
-	}
+            foreach (ZipCityData zipCityItem in zipCityData)
+            {
+                counter++;
+
+                if (counter == 2)
+                {
+                    //If TransactionAutoComplete = false, the below throw can not be raised, instead, do not "void",
+                    //return something through the method.
+                    throw new FaultException("Sorry, can't touch this!");
+                }
+
+                ZipCode zipCodeEntity = zipCodeRepository.GetByZip(zipCityItem.Zip);
+                zipCodeEntity.City = zipCityItem.City;
+                ZipCode updateItem = zipCodeRepository.Update(zipCodeEntity);
+            }
+
+            #endregion
+
+            #region Manual Transaction Programming
+
+            //Default is TransactionScopeOption.Required
+            //using (TransactionScope scope = new TransactionScope())
+            //{
+            //    int counter = 0;
+
+            //    foreach (ZipCityData zipCityItem in zipCityData)
+            //    {
+            //        counter++;
+
+            //        if (counter == 2)
+            //        {
+            //            throw new FaultException("Sorry, can't touch this!");
+            //        }
+
+            //        ZipCode zipCodeEntity = zipCodeRepository.GetByZip(zipCityItem.Zip);
+            //        zipCodeEntity.City = zipCityItem.City;
+            //        ZipCode updateItem = zipCodeRepository.Update(zipCodeEntity);
+            //    }
+
+            //    scope.Complete();
+            //}
+
+            #endregion
+
+            //To perform manual transaction commit, set TransactionAutoComplete = false, and proceed the line below:
+            //OperationContext.Current.SetTransactionComplete();
+        }
+
+        #endregion
+    }
 }
 
 public static class MyStaticResource

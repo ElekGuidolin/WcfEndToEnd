@@ -227,25 +227,54 @@ namespace GeoLib.Client
 
 			try
 			{
-                //Way to do with transaction controlled by the service.
-                //GeoClient proxy = new GeoClient("tcpEP");
-                //proxy.UpdateZipCity(cityZipList);
-                //proxy.Close();
+				#region Controlling Transaction in the service
 
-                //MessageBox.Show("Updated");
+				//Way to do with transaction controlled by the service.
+				//Must use TransactionScope in the service implementation.
+				//GeoClient proxy = new GeoClient("tcpEP");
+				//proxy.UpdateZipCity(cityZipList);
+				//proxy.Close();
 
-                //Way to do with transaction controlled by the client.
-                GeoClient proxy = new GeoClient("tcpEP");
+				#endregion
 
-                using (TransactionScope scope = new TransactionScope())
-                {
-                    proxy.UpdateZipCity(cityZipList);
-                    scope.Complete();
-                }
-                
-                proxy.Close();
+				#region Controlling Transactions PerCall at the client
 
-                MessageBox.Show("Updated");
+				////Way to do with transaction controlled by the client.
+				//GeoClient proxy = new GeoClient("tcpEP");
+
+				////In the service, if the ReleaseServiceInstanceOnTransactionComplete = false is set,
+				//using (TransactionScope scope = new TransactionScope())
+				//            {
+				//	//this method must have the [OperationBehavior(TransactionScopeRequired = true)] also set.
+				//	proxy.UpdateZipCity(cityZipList);
+				//                scope.Complete();
+				//            }
+
+				//            proxy.Close();
+
+				#endregion
+
+				#region Controlling Transaction PerSession failing at client, to make sure the propagation.
+
+				//Way to do with transaction controlled by the client.
+				GeoClient proxy = new GeoClient("tcpEP");
+
+				//In the service, if the ReleaseServiceInstanceOnTransactionComplete = false is set,
+				using (TransactionScope scope = new TransactionScope())
+				{
+					//this method must have the [OperationBehavior(TransactionScopeRequired = true)] also set.
+					proxy.UpdateZipCity(cityZipList);
+					//If the service is PerSession, it's necessary to close the proxy inside the transaction scope.
+					proxy.Close();
+
+					throw new ApplicationException("uh oh.");
+
+					scope.Complete();
+				}
+
+				#endregion
+
+				MessageBox.Show("Updated");
             }
             catch (Exception ex)
 			{

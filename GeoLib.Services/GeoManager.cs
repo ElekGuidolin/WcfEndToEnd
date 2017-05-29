@@ -22,7 +22,7 @@ namespace GeoLib.Services
 
     //ReleaseServiceInstanceOnTransactionComplete = false inside ServiceBehavior is required when InstanceContextMode = PerSession
     [ServiceBehavior(ReleaseServiceInstanceOnTransactionComplete = false,
-                    InstanceContextMode = InstanceContextMode.PerCall)]
+                    InstanceContextMode = InstanceContextMode.PerSession)]
 	public class GeoManager : IGeoService
 	{
 		#region Fields
@@ -199,8 +199,8 @@ namespace GeoLib.Services
         //it will be part of the transaction.If no transaction exists, it will start a new one, and everything inside the method, will be controlled by this transaction.
         //Setting to false, even if a transaction already exists, this method will not be controlled by the transaction.
         //To perform manual transaction commit, set TransactionAutoComplete = false
-        //[OperationBehavior(TransactionScopeRequired = true)]
-        [OperationBehavior(TransactionScopeRequired = false)]
+        [OperationBehavior(TransactionScopeRequired = true)]
+        //[OperationBehavior(TransactionScopeRequired = false)]
         public void UpdateZipCity(IEnumerable<ZipCityData> zipCityData)
         {
             IZipCodeRepository zipCodeRepository = _zipCodeRepository ?? new ZipCodeRepository();
@@ -226,12 +226,13 @@ namespace GeoLib.Services
             {
                 counter++;
 
-                if (counter == 2)
-                {
-                    //If TransactionAutoComplete = false, the below throw can not be raised, instead, do not "void",
-                    //return something through the method.
-                    throw new FaultException("Sorry, can't touch this!");
-                }
+				//This comment is to test throwing the error at the client.
+                //if (counter == 2)
+                //{
+                //    //If TransactionAutoComplete = false, the below throw can not be raised, instead, do not "void",
+                //    //return something through the method.
+                //    throw new FaultException("Sorry, can't touch this!");
+                //}
 
                 ZipCode zipCodeEntity = zipCodeRepository.GetByZip(zipCityItem.Zip);
                 zipCodeEntity.City = zipCityItem.City;

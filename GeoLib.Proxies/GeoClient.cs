@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ServiceModel;
 using System.ServiceModel.Channels;
+using System;
 
 namespace GeoLib.Proxies
 {
@@ -33,6 +34,16 @@ namespace GeoLib.Proxies
 		public IEnumerable<ZipCodeData> GetZips(string zip, int range)
 		{
 			return Channel.GetZips(zip, range);
+		}
+
+		public void UpdateZipCity(string zip, string city)
+		{
+			Channel.UpdateZipCity(zip, city);
+		}
+
+		public void UpdateZipCity(IEnumerable<ZipCityData> zipCityData)
+		{
+			Channel.UpdateZipCity(zipCityData);
 		}
 	}
 }

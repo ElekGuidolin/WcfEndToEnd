@@ -7,6 +7,7 @@ using System.ServiceModel;
 using System.ServiceModel.Channels;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Transactions;
 using System.Windows;
 
 namespace GeoLib.Client
@@ -216,5 +217,91 @@ namespace GeoLib.Client
 			}
 		}
 
+		private void btnUpdateBatch_Click(object sender, RoutedEventArgs e)
+		{
+			List<ZipCityData> cityZipList = new List<ZipCityData>()
+			{
+				new ZipCityData() { Zip = "07035", City = "Bedrock"},
+				new ZipCityData() { Zip = "33030", City = "End of the World"}
+			};
+
+			try
+			{
+				#region Controlling Transaction in the service
+
+				//Way to do with transaction controlled by the service.
+				//Must use TransactionScope in the service implementation.
+				//GeoClient proxy = new GeoClient("tcpEP");
+				//proxy.UpdateZipCity(cityZipList);
+				//proxy.Close();
+
+				#endregion
+
+				#region Controlling Transactions PerCall at the client
+
+				////Way to do with transaction controlled by the client.
+				//GeoClient proxy = new GeoClient("tcpEP");
+
+				////In the service, if the ReleaseServiceInstanceOnTransactionComplete = false is set,
+				//using (TransactionScope scope = new TransactionScope())
+				//            {
+				//	//this method must have the [OperationBehavior(TransactionScopeRequired = true)] also set.
+				//	proxy.UpdateZipCity(cityZipList);
+				//                scope.Complete();
+				//            }
+
+				//            proxy.Close();
+
+				#endregion
+
+				#region Controlling Transaction PerSession failing at client, to make sure the propagation.
+
+				//Way to do with transaction controlled by the client.
+				GeoClient proxy = new GeoClient("tcpEP");
+
+				//In the service, if the ReleaseServiceInstanceOnTransactionComplete = false is set,
+				using (TransactionScope scope = new TransactionScope())
+				{
+					//this method must have the [OperationBehavior(TransactionScopeRequired = true)] also set.
+					proxy.UpdateZipCity(cityZipList);
+					//If the service is PerSession, it's necessary to close the proxy inside the transaction scope.
+					proxy.Close();
+
+					throw new ApplicationException("uh oh.");
+
+					scope.Complete();
+				}
+
+				#endregion
+
+				MessageBox.Show("Updated");
+            }
+            catch (Exception ex)
+			{
+				MessageBox.Show("Error");
+			}
+		}
+
+		private void btnPutBack_Click(object sender, RoutedEventArgs e)
+		{
+			List<ZipCityData> cityZipList = new List<ZipCityData>()
+			{
+				new ZipCityData() { Zip = "07035", City = "Lincoln Park"},
+				new ZipCityData() { Zip = "33030", City = "Homestead"}
+			};
+
+			try
+			{
+				GeoClient proxy = new GeoClient("tcpEP");
+				proxy.UpdateZipCity(cityZipList);
+				proxy.Close();
+
+				MessageBox.Show("Updated");
+			}
+			catch (Exception ex)
+			{
+				MessageBox.Show("Error");
+			}
+		}
 	}
 }

@@ -21,6 +21,7 @@ namespace GeoLib.Client
 		StatefulGeoClient _ProxyStateful;
 		SynchronizationContext _SyncContext = null;
 
+
 		public MainWindow()
 		{
 			InitializeComponent();

@@ -22,7 +22,7 @@ namespace GeoLib.Services
 
     //ReleaseServiceInstanceOnTransactionComplete = false inside ServiceBehavior is required when InstanceContextMode = PerSession
     [ServiceBehavior(ReleaseServiceInstanceOnTransactionComplete = false,
-                    InstanceContextMode = InstanceContextMode.PerSession)]
+                    InstanceContextMode = InstanceContextMode.PerCall)]
 	public class GeoManager : IGeoService
 	{
 		#region Fields

@@ -25,7 +25,8 @@ namespace GeoLib.Client
 		{
 			InitializeComponent();
 
-			//This string sent to GeoClient constructor will define which configuration will be used. Very flexible. Check App.Config.
+			//This string sent to GeoClient constructor will define which configuration will be used.
+			//Very flexible. Check App.Config.
 			//This call, in the way it's configured, will only work with WindowsHost. For WebHost, use webEP.
 			_Proxy = new GeoClient("tcpEP");
 
@@ -239,23 +240,6 @@ namespace GeoLib.Client
 
 				#region Controlling Transactions PerCall at the client
 
-				////Way to do with transaction controlled by the client.
-				//GeoClient proxy = new GeoClient("tcpEP");
-
-				////In the service, if the ReleaseServiceInstanceOnTransactionComplete = false is set,
-				//using (TransactionScope scope = new TransactionScope())
-				//            {
-				//	//this method must have the [OperationBehavior(TransactionScopeRequired = true)] also set.
-				//	proxy.UpdateZipCity(cityZipList);
-				//                scope.Complete();
-				//            }
-
-				//            proxy.Close();
-
-				#endregion
-
-				#region Controlling Transaction PerSession failing at client, to make sure the propagation.
-
 				//Way to do with transaction controlled by the client.
 				GeoClient proxy = new GeoClient("tcpEP");
 
@@ -264,13 +248,31 @@ namespace GeoLib.Client
 				{
 					//this method must have the [OperationBehavior(TransactionScopeRequired = true)] also set.
 					proxy.UpdateZipCity(cityZipList);
-					//If the service is PerSession, it's necessary to close the proxy inside the transaction scope.
-					proxy.Close();
-
-					throw new ApplicationException("uh oh.");
-
 					scope.Complete();
 				}
+
+				proxy.Close();
+
+				#endregion
+
+				#region Controlling Transaction PerSession failing at client, to make sure the propagation.
+
+				////Way to do with transaction controlled by the client. More comments at IGeoService.
+				//GeoClient proxy = new GeoClient("tcpEP");
+
+				////In the service, if the ReleaseServiceInstanceOnTransactionComplete = false is set,
+				//using (TransactionScope scope = new TransactionScope())
+				//{
+				//	//this method must have the [OperationBehavior(TransactionScopeRequired = true)] also set.
+				//	proxy.UpdateZipCity(cityZipList);
+				//	//If the service is PerSession, it's necessary to close the proxy inside the transaction scope.
+				//	proxy.Close();
+
+				//	throw new ApplicationException("uh oh.");
+
+				//	//Unreachable just for tests.
+				//	scope.Complete();
+				//}
 
 				#endregion
 

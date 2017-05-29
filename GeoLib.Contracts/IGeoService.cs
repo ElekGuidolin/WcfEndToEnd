@@ -25,7 +25,7 @@ namespace GeoLib.Contracts
 		[TransactionFlow(TransactionFlowOption.Allowed)]
 		void UpdateZipCity(string zip, string city);
 
-		//The above code blocks the propagation of transactions from client to server.
+		//The code below blocks the propagation of transactions from client to server.
 		//When it's NotAllowed, will mean that if the service part doesn't throw any errors, the client will not rollback if catches an error.
 		//[TransactionFlow(TransactionFlowOption.NotAllowed)]
 		[OperationContract(Name = "UpdateCityRange")]
